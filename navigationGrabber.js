@@ -1,3 +1,5 @@
+/* global document */
+
 /**
  *
  *   dealer.com navigation scraper
@@ -6,11 +8,11 @@
  */
 
 
-function setSubMenu(navigationMenu, subNavArray) {
-    'use strict';
-
-
-}
+//function setSubMenu(navigationMenu, subNavArray) {
+//    'use strict';
+//
+//
+//}
 
 /**
  *  accepts the main navigation menu
@@ -27,7 +29,7 @@ function setMainNavItems(navigationMenu, mainNavArray) {
         let subMenuLinks = {};
         let mainMenuText; // = mainNavArray[z].innerText.trim() === '' ? 'image' : mainNavArray[z].innerText; // get main navigation menu item text
         let subMenu = mainNavArray[z].querySelector('ul'); // save all the sub menus that appear in the drop down
-        //let subLinkInfo = {};
+        // let subLinkInfo = {};
         let linkText; // = subLinks[a].innerText.trim();
         let linkURL; // = subLinks[a].querySelector('a').href;
         if (subMenu) { // check to see if the main navigation item has a sub menu
@@ -68,8 +70,8 @@ function ddc() {
      *   build navigation object
      */
     let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
-    //setMainNavItems(navigationMenu, mainNavigationItems);
-    //let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
+    // setMainNavItems(navigationMenu, mainNavigationItems);
+    // let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
     for (let z = 0; z < mainNavigationItems.length; z += 1) {
         let subMenu = {};
         let mainMenuText = mainNavigationItems[z].innerText.trim() === '' ? 'image' : mainNavigationItems[z].innerText; // get get main navigation menu item text
@@ -103,7 +105,7 @@ function ddc() {
         // save the drop down menu links
         navigationMenu[mainMenuText] = subMenu;
     }
-    //console.log(navigationMenu);
+    // console.log(navigationMenu);
     return navigationMenu;
 }
 
@@ -117,26 +119,26 @@ function cdk() {
 
     let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
     setMainNavItems(navigationMenu, mainNavigationItems);
-    console.log(navigationMenu);
+    //    console.log(navigationMenu);
     return navigationMenu;
 }
 
 function csvConvertor(JSONData, ReportTitle) {
     'use strict';
 
-    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    // If JSONData is not an object then JSON.parse will parse the JSON string in an Object
     let arrData = typeof JSONData !== 'object' ? JSON.parse(JSONData) : JSONData;
     let CSV = '';
     // column titles
     let columnTitles = ['Main Nav Title', 'Sub-Nav Drop Down Title', 'Live Link Text', 'Live URL reference', 'CDK Proof URL', 'LandingPage Name'];
 
-    //Set Report title in first row or line
+    // Set Report title in first row or line
     CSV += ReportTitle + '\r\n\n';
 
-    //will generate the Label/Header
+    // will generate the Label/Header
     CSV += columnTitles.join() + '\r\n\n';
 
-    //This loop will extract the label from 1st index of on array
+    // This loop will extract the label from 1st index of on array
     for (let menu in arrData) {
         if (arrData.hasOwnProperty(menu)) {
             // skip provider key
@@ -164,11 +166,11 @@ function csvConvertor(JSONData, ReportTitle) {
 
     // if there is something wrong with the CSV, return an error
     if (CSV === '') {
-        //alert('Invalid data');
+        // alert('Invalid data');
         return;
     }
 
-    //Initialize file format you want csv or xls
+    // Initialize file format you want csv or xls
     let uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
 
     return uri;
@@ -177,19 +179,19 @@ function csvConvertor(JSONData, ReportTitle) {
 function csvConvertorCDK(JSONData, ReportTitle) {
     'use strict';
 
-    //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+    // If JSONData is not an object then JSON.parse will parse the JSON string in an Object
     let arrData = typeof JSONData !== 'object' ? JSON.parse(JSONData) : JSONData;
     let CSV = '';
     // column titles
-    let columnTitles = ['Main Nav Title', 'Live Link Text', 'Live URL reference', 'CDK Proof URL', 'LandingPage Name'];
+    let columnTitles = ['Main Nav Title', 'Sub-Nav Drop Down Title', 'CDK Link', 'Content URL Reference', 'Build and Styling Notes', 'LandingPage Proof URL', 'LandingPage Name'];
 
-    //Set Report title in first row or line
+    // Set Report title in first row or line
     CSV += ReportTitle + '\r\n\n';
 
-    //will generate the Label/Header
+    // will generate the Label/Header
     CSV += columnTitles.join() + '\r\n\n';
-    debugger;
-    //This loop will extract the label from 1st index of on array
+    //    debugger;
+    // This loop will extract the label from 1st index of on array
     for (let menu in arrData) {
         if (arrData.hasOwnProperty(menu)) {
             // skip provider key
@@ -209,7 +211,14 @@ function csvConvertorCDK(JSONData, ReportTitle) {
             // add sub menu links to CSV
             for (let info in arrData[menu]) {
                 if (arrData[menu].hasOwnProperty(info)) {
-                    let newRow = ' , ' + info + ',' + arrData[menu][info];
+                    let newRow;
+                    // check if the URL leads to a model details page
+                    if (arrData[menu][info].indexOf('/models/') > -1) {
+                        newRow = ' , ' + info + ',' + arrData[menu][info].substr(arrData[menu][info].indexOf('/models/') + 1);
+                    } else {
+                        newRow = ' , ' + info + ',' + arrData[menu][info].substr(arrData[menu][info].lastIndexOf('/') + 1);
+                    }
+                    //                    let newRow = ' , ' + info + ',' + arrData[menu][info].substr(arrData[menu][info].lastIndexOf('/') + 1);
                     if (counter === length) {
                         CSV += newRow + '\r\n\n';
                     } else {
@@ -227,10 +236,10 @@ function csvConvertorCDK(JSONData, ReportTitle) {
         return;
     }
 
-    //Initialize file format you want csv or xls
+    // Initialize file format you want csv or xls
     let uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
 
-    console.log(uri);
+    //    console.log(uri);
     return uri;
 }
 
@@ -250,7 +259,7 @@ function addLink() {
     myLink.innerText = '"Save link as..." to download the navigation csv';
     linkContainer.appendChild(myLink);
 
-    //console.log(this.value);
+    // console.log(this.value);
     switch (this.value) {
         case 'ddc':
             navObj = ddc();
@@ -263,7 +272,7 @@ function addLink() {
         default:
             // do nothing
     }
-    //let navObj = getNavigation(this.value);
+    // let navObj = getNavigation(this.value);
 }
 
 function addDropDown() {
@@ -305,5 +314,5 @@ function addDropDown() {
 }
 
 addDropDown();
-//cdk();
-//csvConvertorCDK(cdk(), 'Navigation');
+// cdk();
+// csvConvertorCDK(cdk(), 'Navigation');
