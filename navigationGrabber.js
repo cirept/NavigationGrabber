@@ -5,6 +5,57 @@
  *
  */
 
+
+function setSubMenu(navigationMenu, subNavArray) {
+    'use strict';
+
+
+}
+
+/**
+ *  accepts the main navigation menu
+ *  @param {object} navigationMenu - the object that will contain the navigation menu structure
+ *  @param {array} mainNavArray - the MAIN navigation UL element
+ */
+function setMainNavItems(navigationMenu, mainNavArray) {
+    'use strict';
+
+    /**
+     *   build navigation object
+     */
+    for (let z = 0; z < mainNavArray.length; z += 1) {
+        let subMenuLinks = {};
+        let mainMenuText; // = mainNavArray[z].innerText.trim() === '' ? 'image' : mainNavArray[z].innerText; // get main navigation menu item text
+        let subMenu = mainNavArray[z].querySelector('ul'); // save all the sub menus that appear in the drop down
+        //let subLinkInfo = {};
+        let linkText; // = subLinks[a].innerText.trim();
+        let linkURL; // = subLinks[a].querySelector('a').href;
+        if (subMenu) { // check to see if the main navigation item has a sub menu
+            mainMenuText = subMenu.parentElement.firstElementChild.innerText; // Will always be the first element in the LI element (usually)
+            let subLinks = subMenu.querySelectorAll('li'); // get links in the sub menu
+
+            // loop through sub menu links and get all links information
+            for (let a = 0; a < subLinks.length; a += 1) {
+                linkText = subLinks[a].innerText.trim();
+                linkURL = subLinks[a].querySelector('a').href;
+                // save sub menu link information in sub menu object
+                subMenuLinks[linkText] = linkURL;
+            }
+        } else {
+            // if there is no sub menu that means that the main navigation text is a link
+            let mainNavLink = mainNavArray[z].querySelector('a');
+
+            mainMenuText = mainNavLink.innerText;
+            linkURL = mainNavLink.href;
+
+            // save sub menu link information in sub menu object
+            subMenuLinks[mainMenuText] = linkURL;
+        }
+        // save sub menu object
+        navigationMenu[mainMenuText] = subMenuLinks;
+    }
+}
+
 function ddc() {
     'use strict';
 
@@ -17,6 +68,8 @@ function ddc() {
      *   build navigation object
      */
     let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
+    //setMainNavItems(navigationMenu, mainNavigationItems);
+    //let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
     for (let z = 0; z < mainNavigationItems.length; z += 1) {
         let subMenu = {};
         let mainMenuText = mainNavigationItems[z].innerText.trim() === '' ? 'image' : mainNavigationItems[z].innerText; // get get main navigation menu item text
@@ -50,6 +103,7 @@ function ddc() {
         // save the drop down menu links
         navigationMenu[mainMenuText] = subMenu;
     }
+    //console.log(navigationMenu);
     return navigationMenu;
 }
 
@@ -61,34 +115,9 @@ function cdk() {
     // save the drop down menu links
     navigationMenu.provider = 'cdk';
 
-    /**
-     *   build navigation object
-     */
     let mainNavigationItems = mainNavigation.children; // save all the DROP DOWN MENU that appears when clicking on a main navigation item
-    for (let z = 0; z < mainNavigationItems.length; z += 1) {
-        let subMenuLinks = {};
-        let mainMenuText = mainNavigationItems[z].innerText.trim() === '' ? 'image' : mainNavigationItems[z].innerText; // get main navigation menu item text
-        let subMenu = mainNavigationItems[z].querySelector('ul'); // save all the sub menus that appear in the drop down
-
-        if (subMenu) { // check to see if the main navigation item has a sub menu
-            /**
-             *   Loop Through sub menus and get all links information
-             */
-            let subLinks = subMenu.querySelectorAll('li'); // get links in the sub menu
-            for (let a = 0; a < subLinks.length; a += 1) {
-                let subLinkInfo = {};
-                let linkText = subLinks[a].innerText.trim();
-                let linkURL = subLinks[a].querySelector('a').href;
-                // save data into object
-                subLinkInfo.Text = linkText;
-                subLinkInfo.URL = linkURL;
-                // save sub menu link information in sub menu object
-                subMenuLinks[a] = subLinkInfo;
-            }
-        }
-        // save sub menu object
-        navigationMenu[mainMenuText] = subMenuLinks;
-    }
+    setMainNavItems(navigationMenu, mainNavigationItems);
+    console.log(navigationMenu);
     return navigationMenu;
 }
 
@@ -169,30 +198,25 @@ function csvConvertorCDK(JSONData, ReportTitle) {
             }
             // build sub menu
             let length = Object.keys(arrData[menu]).length;
-            for (let q = 0; q < length; q += 1) {
-                //for (let subMenu in arrData[menu]) {
-                //if (arrData[menu].hasOwnProperty(subMenu)) {
-                let row = '';
-                if (q === 0) {
-                    row += menu;
-                    //row += subMenu;
-                    //CSV += row;
-                    CSV += row + '\r\n';
-                }
+            let counter = 1;
+            let row = '';
+            // if first
+            if (counter === 1) {
+                row += menu;
+                CSV += row + '\r\n';
+            }
 
-                // add sub menu links to CSV
-                //for (let info in arrData[menu][subMenu]) {
-                //if (arrData[menu][subMenu].hasOwnProperty(info)) {
-                let newRow = ' , ' + arrData[menu][q].Text + ',' + arrData[menu][q].URL;
-                if (q + 1 === length) {
-                    CSV += newRow + '\r\n\n';
-                } else {
-                    CSV += newRow + '\r\n';
+            // add sub menu links to CSV
+            for (let info in arrData[menu]) {
+                if (arrData[menu].hasOwnProperty(info)) {
+                    let newRow = ' , ' + info + ',' + arrData[menu][info];
+                    if (counter === length) {
+                        CSV += newRow + '\r\n\n';
+                    } else {
+                        CSV += newRow + '\r\n';
+                    }
                 }
-                //CSV += newRow + '\r\n\n';
-                //}
-                //}
-                //}
+                counter += 1;
             }
         }
     }
@@ -206,6 +230,7 @@ function csvConvertorCDK(JSONData, ReportTitle) {
     //Initialize file format you want csv or xls
     let uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
 
+    console.log(uri);
     return uri;
 }
 
@@ -281,3 +306,4 @@ function addDropDown() {
 
 addDropDown();
 //cdk();
+//csvConvertorCDK(cdk(), 'Navigation');
