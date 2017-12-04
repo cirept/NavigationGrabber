@@ -286,6 +286,8 @@ function addDropDown() {
     dropdownContainer.style.zIndex = '9999999';
     dropdownContainer.style.padding = '5px';
     dropdownContainer.style.background = '#ffffff';
+    dropdownContainer.innerText = 'grabNav v.0.2';
+    dropdownContainer.style.cssText = dropdownContainer.style.cssText + 'background: linear-gradient(to bottom, #b2fefa, #0ed2f7) !important;'; // adding !important
     document.body.appendChild(dropdownContainer);
 
     // create dropdown selection
@@ -293,12 +295,13 @@ function addDropDown() {
     myDropdown.id = 'myNavTool';
     myDropdown.onchange = addLink;
     myDropdown.style.height = '50px';
+    myDropdown.style.display = 'block';
     myDropdown.style.width = 'auto';
     myDropdown.style.padding = '10px';
-    myDropdown.style.color = '#ffffff';
+    myDropdown.style.color = '#000000';
     myDropdown.style.border = '5px solid rgb(255, 255, 255)';
     myDropdown.style.borderRadius = '10px';
-    myDropdown.style.cssText = myDropdown.style.cssText + 'background: rgb(171, 30, 46) !important;'; // adding !important
+    myDropdown.style.cssText = myDropdown.style.cssText + 'background: linear-gradient(to top, rgb(86, 171, 47), rgb(168, 224, 99)) !important;'; // adding !important
     dropdownContainer.appendChild(myDropdown);
 
     /**
